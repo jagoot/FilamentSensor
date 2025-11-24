@@ -9,7 +9,7 @@
 const char* getSetupPortalHTML() {
   return R"rawliteral(
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -148,49 +148,49 @@ const char* getSetupPortalHTML() {
     <p class="subtitle">Initial Setup</p>
 
     <div class="alert alert-success" id="successAlert">
-      ✅ Konfiguration gespeichert! System startet neu...
+      ✅ Configuration saved! System restarting...
     </div>
 
     <div class="alert alert-error" id="errorAlert">
-      ❌ Fehler beim Speichern!
+      ❌ Error saving!
     </div>
 
     <div class="info-box">
-      ℹ️ Bitte geben Sie Ihre WiFi-Zugangsdaten und die IP-Adresse Ihres Druckers ein.
+      ℹ️ Please enter your WiFi credentials and your printer's IP address.
     </div>
 
     <form id="setupForm">
       <div class="section">
-        <div class="section-title">📶 WiFi Einstellungen</div>
+        <div class="section-title">📶 WiFi Settings</div>
 
         <div class="form-group">
-          <label for="ssid">Netzwerkname (SSID)</label>
-          <input type="text" id="ssid" name="ssid" required placeholder="Ihr WiFi Netzwerk">
+          <label for="ssid">Network Name (SSID)</label>
+          <input type="text" id="ssid" name="ssid" required placeholder="Your WiFi Network">
         </div>
 
         <div class="form-group">
-          <label for="password">Passwort</label>
-          <input type="password" id="password" name="password" required placeholder="WiFi Passwort">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="WiFi Password">
         </div>
       </div>
 
       <div class="section">
-        <div class="section-title">🖨️ Drucker Einstellungen</div>
+        <div class="section-title">🖨️ Printer Settings</div>
 
         <div class="form-group">
-          <label for="printerIp">Drucker IP-Adresse</label>
+          <label for="printerIp">Printer IP Address</label>
           <input type="text" id="printerIp" name="printerIp" required
                  placeholder="192.168.1.100" pattern="^(\d{1,3}\.){3}\d{1,3}$">
         </div>
 
         <div class="form-group">
-          <label for="printerPort">Drucker Port</label>
+          <label for="printerPort">Printer Port</label>
           <input type="number" id="printerPort" name="printerPort" required
                  value="80" min="1" max="65535">
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">💾 Speichern & Verbinden</button>
+      <button type="submit" class="btn btn-primary">💾 Save & Connect</button>
     </form>
   </div>
 
@@ -226,7 +226,7 @@ const char* getSetupPortalHTML() {
           document.getElementById('errorAlert').style.display = 'block';
         }
       } catch (error) {
-        document.getElementById('errorAlert').textContent = '❌ Verbindungsfehler!';
+        document.getElementById('errorAlert').textContent = '❌ Connection error!';
         document.getElementById('errorAlert').style.display = 'block';
       }
     });

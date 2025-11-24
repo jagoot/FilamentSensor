@@ -4,7 +4,7 @@
 const char* getDashboardHTML() {
   return R"rawliteral(
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -400,25 +400,25 @@ const char* getDashboardHTML() {
   <div class="container">
     <header>
       <h1>🖨️ Centauri Carbon Monitor</h1>
-      <div class="subtitle">Filament-Sensor & Status-Überwachung</div>
+      <div class="subtitle">Filament Sensor & Status Monitoring</div>
     </header>
 
     <!-- 3-Spalten Grid (2 Spalten: Temps+Status, Sensor+Controls, Kamera über 2 Spalten unten) -->
     <div class="grid">
       <!-- Spalte 1: Temperaturen + Fortschritt + Status -->
       <div class="card">
-        <h2>🌡️ Temps & Fortschritt</h2>
+        <h2>🌡️ Temps & Progress</h2>
         <div id="statusBadge" class="status-badge status-idle" style="margin-bottom: 12px;">IDLE</div>
         <div class="info-row">
-          <span class="label">Bett</span>
+          <span class="label">Bed</span>
           <span id="bedTemp" class="temp-display">-°C</span>
         </div>
         <div class="info-row">
-          <span class="label">Düse</span>
+          <span class="label">Nozzle</span>
           <span id="nozzleTemp" class="temp-display">-°C</span>
         </div>
         <div class="info-row">
-          <span class="label">Kammer</span>
+          <span class="label">Chamber</span>
           <span id="chamberTemp" class="value">-°C</span>
         </div>
         <div class="progress-bar">
@@ -426,11 +426,11 @@ const char* getDashboardHTML() {
           <div id="progressText" class="progress-text">0%</div>
         </div>
         <div class="info-row">
-          <span class="label">Datei</span>
+          <span class="label">File</span>
           <span id="filename" class="value">-</span>
         </div>
         <div class="info-row">
-          <span class="label">Schicht</span>
+          <span class="label">Layer</span>
           <span id="layer" class="value">-</span>
         </div>
         <div class="info-row">
@@ -441,7 +441,7 @@ const char* getDashboardHTML() {
 
       <!-- Spalte 2: Filament-Sensor + Steuerung -->
       <div class="card">
-        <h2>🎞️ Sensor & Steuerung</h2>
+        <h2>🎞️ Sensor & Control</h2>
         <div id="sensorStatus" class="sensor-status sensor-ok">
           <div class="info-row">
             <span class="label">Status</span>
@@ -478,7 +478,7 @@ const char* getDashboardHTML() {
         <div class="camera-container">
           <img id="cameraStream" src="" style="display: none;" onload="this.style.display='block'; document.getElementById('cameraOffline').style.display='none';" onerror="this.style.display='none'; document.getElementById('cameraOffline').style.display='flex';">
           <div id="cameraOffline" class="camera-offline" style="display: flex;">
-            Kamera offline oder nicht konfiguriert
+            Camera offline or not configured
           </div>
         </div>
       </div>
@@ -489,75 +489,75 @@ const char* getDashboardHTML() {
   <div id="settingsModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>⚙️ Einstellungen</h2>
-        <button class="close-btn" onclick="closeSettings()">✕ Schließen</button>
+        <h2>⚙️ Settings</h2>
+        <button class="close-btn" onclick="closeSettings()">✕ Close</button>
       </div>
 
       <!-- Filament Sensor Settings -->
       <div class="settings-section">
-        <h3>🎞️ Filament-Sensor</h3>
+        <h3>🎞️ Filament Sensor</h3>
         <label>
           <input type="checkbox" id="autoPauseToggle" onchange="toggleAutoPause()">
-          Auto-Pause aktivieren
+          Enable auto-pause
         </label>
         <label>
           <input type="checkbox" id="switchModeToggle" onchange="toggleSwitchMode()">
           Direct Mode (Hardware-Pin)
         </label>
         <label>
-          <span class="label">Verzögerung vor Pause (ms)</span>
+          <span class="label">Delay before pause (ms)</span>
           <input type="number" id="pauseDelay" min="1000" max="10000" step="500">
         </label>
-        <button onclick="savePauseDelay()">💾 Verzögerung speichern</button>
+        <button onclick="savePauseDelay()">💾 Save delay</button>
       </div>
 
       <!-- WhatsApp Notifications -->
       <div class="settings-section">
-        <h3>📱 WhatsApp-Benachrichtigungen (CallMeBot)</h3>
+        <h3>📱 WhatsApp Notifications (CallMeBot)</h3>
         <label>
           <input type="checkbox" id="notifyEnabled" onchange="toggleNotifications()">
-          Benachrichtigungen aktivieren
+          Enable notifications
         </label>
         <label>
-          <span class="label">Telefonnummer (mit Ländercode, z.B. 491701234567)</span>
+          <span class="label">Phone number (with country code, e.g. 491701234567)</span>
           <input type="text" id="notifyPhone" placeholder="491701234567">
         </label>
         <label>
           <span class="label">CallMeBot API Key</span>
           <input type="text" id="notifyApiKey" placeholder="API Key">
         </label>
-        <button onclick="saveCallMeBotSettings()">💾 Speichern</button>
-        <button onclick="testNotification()" class="success">📤 Test-Nachricht senden</button>
+        <button onclick="saveCallMeBotSettings()">💾 Save</button>
+        <button onclick="testNotification()" class="success">📤 Send test message</button>
         <div id="notifyMessage" class="alert hidden"></div>
       </div>
 
       <!-- WiFi Configuration -->
       <div class="settings-section">
-        <h3>📡 WiFi-Konfiguration</h3>
+        <h3>📡 WiFi Configuration</h3>
         <label>
-          <span class="label">SSID (Router-Name)</span>
+          <span class="label">SSID (Router name)</span>
           <input type="text" id="wifiSSIDInput" placeholder="Mein-Router">
         </label>
         <label>
-          <span class="label">WiFi-Passwort</span>
+          <span class="label">WiFi Password</span>
           <input type="password" id="wifiPasswordInput" placeholder="********">
         </label>
-        <button onclick="saveWiFiConfig()">💾 Speichern & Neu starten</button>
+        <button onclick="saveWiFiConfig()">💾 Save & Restart</button>
         <div id="wifiConfigMessage" class="alert hidden"></div>
       </div>
 
       <!-- Printer Configuration -->
       <div class="settings-section">
-        <h3>🖨️ Drucker-Konfiguration</h3>
+        <h3>🖨️ Printer Configuration</h3>
         <label>
-          <span class="label">Drucker IP-Adresse</span>
+          <span class="label">Printer IP Address</span>
           <input type="text" id="printerIPInput" placeholder="192.168.1.67">
         </label>
         <label>
-          <span class="label">Drucker Port</span>
+          <span class="label">Printer Port</span>
           <input type="number" id="printerPortInput" value="80" min="1" max="65535">
         </label>
-        <button onclick="savePrinterConfig()">💾 Speichern & Neu starten</button>
+        <button onclick="savePrinterConfig()">💾 Save & Restart</button>
         <div id="printerConfigMessage" class="alert hidden"></div>
       </div>
 
@@ -565,10 +565,10 @@ const char* getDashboardHTML() {
       <div class="settings-section">
         <h3>📦 OTA Firmware Update</h3>
         <p style="color: #888; margin-bottom: 10px; font-size: 0.9em;">
-          Wähle eine .bin Datei aus und klicke auf Upload. Der ESP32 startet nach erfolgreichem Update automatisch neu.
+          Select a .bin file and click upload. The ESP32 will automatically restart after a successful update.
         </p>
         <input type="file" id="firmwareFile" accept=".bin">
-        <button onclick="uploadFirmware()" style="background: #ff6600;">📤 Firmware hochladen</button>
+        <button onclick="uploadFirmware()" style="background: #ff6600;">📤 Upload firmware</button>
         <div id="uploadProgress" class="progress-bar hidden">
           <div id="uploadBar" class="progress-fill" style="width: 0%"></div>
           <div id="uploadText" class="progress-text">0%</div>
@@ -627,16 +627,16 @@ const char* getDashboardHTML() {
       const sensorDiv = document.getElementById('sensorStatus');
       if (data.sensor.error) {
         sensorDiv.className = 'sensor-status sensor-error';
-        document.getElementById('sensorError').textContent = '⚠️ FEHLER!';
+        document.getElementById('sensorError').textContent = '⚠️ ERROR!';
       } else {
         sensorDiv.className = 'sensor-status sensor-ok';
         document.getElementById('sensorError').textContent = '✓ OK';
       }
 
       document.getElementById('filamentPresent').textContent =
-        data.sensor.noFilament ? '❌ FEHLT' : '✓ Vorhanden';
+        data.sensor.noFilament ? '❌ MISSING' : '✓ Present';
       document.getElementById('autoPause').textContent =
-        data.sensor.autoPause ? '✓ Aktiv' : '⚫ Aus';
+        data.sensor.autoPause ? '✓ Active' : '⚫ Off';
 
       // Settings - only update if settings modal is closed (to avoid overwriting user input)
       const settingsModal = document.getElementById('settingsModal');
@@ -647,7 +647,7 @@ const char* getDashboardHTML() {
         document.getElementById('notifyEnabled').checked = data.notify.enabled;
         document.getElementById('notifyPhone').value = data.notify.phone;
         document.getElementById('wifiSSIDInput').value = data.wifiSSID || '';
-        document.getElementById('wifiPasswordInput').value = '';  // Password bleibt leer aus Sicherheitsgründen
+        document.getElementById('wifiPasswordInput').value = '';  // Password remains empty for security reasons
         document.getElementById('printerIPInput').value = data.printerIP || '';
         document.getElementById('printerPortInput').value = data.printerPort || 80;
       }
@@ -672,7 +672,7 @@ const char* getDashboardHTML() {
 
     function pausePrint() { sendCommand('pause'); }
     function resumePrint() { sendCommand('resume'); }
-    function cancelPrint() { if(confirm('Druck wirklich abbrechen?')) sendCommand('cancel'); }
+    function cancelPrint() { if(confirm('Really cancel print?')) sendCommand('cancel'); }
     function toggleLight() { sendCommand('toggleLight'); }
     function clearError() { sendCommand('clearError'); }
     function toggleAutoPause() { sendCommand('toggleAutoPause'); }
@@ -688,7 +688,7 @@ const char* getDashboardHTML() {
           document.getElementById('cameraStream').src = cameraURL;
         }
       } catch (error) {
-        console.error('Fehler beim Laden der Kamera-URL:', error);
+        console.error('Error loading camera URL:', error);
       }
     }
 
@@ -723,7 +723,7 @@ const char* getDashboardHTML() {
         apiKey: document.getElementById('notifyApiKey').value
       });
       msg.className = 'alert alert-success';
-      msg.textContent = '✓ Einstellungen gespeichert';
+      msg.textContent = '✓ Settings saved';
       msg.classList.remove('hidden');
       setTimeout(() => msg.classList.add('hidden'), 3000);
     }
@@ -735,7 +735,7 @@ const char* getDashboardHTML() {
 
       if (!wifiSSID) {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Bitte SSID eingeben';
+        msg.textContent = '❌ Please enter SSID';
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
         return;
@@ -743,7 +743,7 @@ const char* getDashboardHTML() {
 
       if (!wifiPassword) {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Bitte WiFi-Passwort eingeben';
+        msg.textContent = '❌ Please enter WiFi password';
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
         return;
@@ -757,7 +757,7 @@ const char* getDashboardHTML() {
       .then(r => r.json())
       .then(data => {
         msg.className = 'alert alert-success';
-        msg.textContent = '✓ Gespeichert. ESP32 startet neu...';
+        msg.textContent = '✓ Saved. ESP32 restarting...';
         msg.classList.remove('hidden');
         setTimeout(() => {
           location.reload();
@@ -765,7 +765,7 @@ const char* getDashboardHTML() {
       })
       .catch(e => {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Fehler beim Speichern';
+        msg.textContent = '❌ Error saving';
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
       });
@@ -778,7 +778,7 @@ const char* getDashboardHTML() {
 
       if (!printerIP) {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Bitte Drucker-IP eingeben';
+        msg.textContent = '❌ Please enter printer IP';
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
         return;
@@ -792,7 +792,7 @@ const char* getDashboardHTML() {
       .then(r => r.json())
       .then(data => {
         msg.className = 'alert alert-success';
-        msg.textContent = '✓ Gespeichert. ESP32 startet neu...';
+        msg.textContent = '✓ Saved. ESP32 restarting...';
         msg.classList.remove('hidden');
         setTimeout(() => {
           location.reload();
@@ -800,7 +800,7 @@ const char* getDashboardHTML() {
       })
       .catch(e => {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Fehler beim Speichern';
+        msg.textContent = '❌ Error saving';
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 3000);
       });
@@ -810,7 +810,7 @@ const char* getDashboardHTML() {
       const msg = document.getElementById('notifyMessage');
       sendCommand('testNotification');
       msg.className = 'alert alert-success';
-      msg.textContent = '📤 Test-Nachricht wird gesendet...';
+      msg.textContent = '📤 Test message sending...';
       msg.classList.remove('hidden');
       setTimeout(() => msg.classList.add('hidden'), 5000);
     }
@@ -818,7 +818,7 @@ const char* getDashboardHTML() {
     function uploadFirmware() {
       const file = document.getElementById('firmwareFile').files[0];
       if (!file) {
-        alert('Bitte wähle eine Firmware-Datei aus');
+        alert('Please select a firmware file');
         return;
       }
 
@@ -846,12 +846,12 @@ const char* getDashboardHTML() {
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           msg.className = 'alert alert-success';
-          msg.textContent = '✓ Upload erfolgreich! ESP32 startet neu...';
+          msg.textContent = '✓ Upload successful! ESP32 restarting...';
           msg.classList.remove('hidden');
           setTimeout(() => location.reload(), 10000);
         } else {
           msg.className = 'alert alert-error';
-          msg.textContent = '❌ Upload fehlgeschlagen: ' + xhr.statusText;
+          msg.textContent = '❌ Upload failed: ' + xhr.statusText;
           msg.classList.remove('hidden');
         }
         progressDiv.classList.add('hidden');
@@ -859,7 +859,7 @@ const char* getDashboardHTML() {
 
       xhr.addEventListener('error', () => {
         msg.className = 'alert alert-error';
-        msg.textContent = '❌ Upload fehlgeschlagen';
+        msg.textContent = '❌ Upload failed';
         msg.classList.remove('hidden');
         progressDiv.classList.add('hidden');
       });

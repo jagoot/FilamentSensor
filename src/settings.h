@@ -9,11 +9,11 @@
 const char* getSettingsHTML() {
   return R"rawliteral(
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Einstellungen - Centauri Monitor</title>
+  <title>Settings - Centauri Monitor</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -213,19 +213,19 @@ const char* getSettingsHTML() {
 <body>
   <div class="container">
     <header>
-      <h1>⚙️ Einstellungen</h1>
-      <p>Konfiguration & Verwaltung</p>
+      <h1>⚙️ Settings</h1>
+      <p>Configuration & Management</p>
     </header>
 
     <div class="nav-buttons">
       <button class="btn btn-primary" onclick="window.location.href='/'">
-        🏠 Zurück zum Dashboard
+        🏠 Back to Dashboard
       </button>
     </div>
 
     <!-- WiFi & Printer Settings -->
     <div class="settings-section">
-      <h2>🌐 Netzwerk & Drucker</h2>
+      <h2>🌐 Network & Printer</h2>
 
       <div class="form-group">
         <label>WiFi SSID:</label>
@@ -233,26 +233,26 @@ const char* getSettingsHTML() {
       </div>
 
       <div class="form-group">
-        <label>WiFi Passwort:</label>
-        <input type="password" id="wifiPassword" placeholder="Passwort">
+        <label>WiFi Password:</label>
+        <input type="password" id="wifiPassword" placeholder="Password">
       </div>
 
       <div class="form-group">
-        <label>Drucker IP-Adresse:</label>
+        <label>Printer IP Address:</label>
         <input type="text" id="printerIP" placeholder="192.168.1.100">
       </div>
 
       <div class="form-group">
-        <label>Drucker Port:</label>
+        <label>Printer Port:</label>
         <input type="number" id="printerPort" placeholder="80" value="80">
       </div>
 
       <div class="controls">
         <button class="btn btn-success" onclick="saveSettings()">
-          💾 Speichern
+          💾 Save
         </button>
         <button class="btn btn-secondary" onclick="loadSettings()">
-          🔄 Neu laden
+          🔄 Reload
         </button>
       </div>
 
@@ -261,17 +261,17 @@ const char* getSettingsHTML() {
 
     <!-- CallMeBot WhatsApp Notifications -->
     <div class="settings-section">
-      <h2>📱 WhatsApp-Benachrichtigungen (CallMeBot)</h2>
+      <h2>📱 WhatsApp Notifications (CallMeBot)</h2>
 
       <div class="form-group">
         <label>
           <input type="checkbox" id="callmebotEnabled" style="width: auto;">
-          Benachrichtigungen aktivieren
+          Enable notifications
         </label>
       </div>
 
       <div class="form-group">
-        <label>Telefonnummer (mit Ländercode, z.B. 4915775323176):</label>
+        <label>Phone number (with country code, e.g. 4915775323176):</label>
         <input type="text" id="callmebotPhone" placeholder="4915775323176">
       </div>
 
@@ -279,17 +279,17 @@ const char* getSettingsHTML() {
         <label>API Key:</label>
         <input type="text" id="callmebotApiKey" placeholder="3751779">
         <small style="color: #888;">
-          API Key erhalten: Sende "I allow callmebot to send me messages" an
+          Get API Key: Send "I allow callmebot to send me messages" to
           <a href="https://wa.me/34644409248" target="_blank" style="color: #4CAF50;">+34 644 40 92 48</a>
         </small>
       </div>
 
       <div class="controls">
         <button class="btn btn-success" onclick="saveCallMeBotSettings()">
-          💾 Speichern
+          💾 Save
         </button>
         <button class="btn btn-secondary" onclick="testNotification()">
-          📤 Test-Nachricht senden
+          📤 Send test message
         </button>
       </div>
 
@@ -301,21 +301,21 @@ const char* getSettingsHTML() {
       <h2>🔄 Firmware Update (OTA)</h2>
 
       <div class="info-row">
-        <span class="info-label">Aktuelle Partition:</span>
+        <span class="info-label">Current Partition:</span>
         <span class="info-value" id="currentPartition">-</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Nächste Partition:</span>
+        <span class="info-label">Next Partition:</span>
         <span class="info-value" id="nextPartition">-</span>
       </div>
 
       <div class="controls" style="margin-top: 20px;">
         <input type="file" id="firmwareFile" accept=".bin" style="display: none;" onchange="uploadFirmware()">
         <button class="btn btn-success" onclick="document.getElementById('firmwareFile').click()">
-          📁 Firmware auswählen
+          📁 Select firmware
         </button>
         <button class="btn btn-secondary" onclick="checkOTAStatus()">
-          📊 Status prüfen
+          📊 Check status
         </button>
       </div>
 
@@ -323,7 +323,7 @@ const char* getSettingsHTML() {
         <div class="progress-bar-container">
           <div id="otaProgressBar" class="progress-bar">0%</div>
         </div>
-        <div id="otaStatus" style="margin-top: 10px; text-align: center;">Warte auf Upload...</div>
+          <div id="otaStatus" style="margin-top: 10px; text-align: center;">Waiting for upload...</div>
       </div>
     </div>
 
@@ -331,26 +331,26 @@ const char* getSettingsHTML() {
     <div class="settings-section">
       <h2>🔧 Runout Pin Test (IO2)</h2>
       <p style="opacity: 0.8; margin-bottom: 15px;">
-        Manuelles Testen des Runout-Pins. Im Normalbetrieb wird SENSOR_SWITCH automatisch durchgeschleift.
+        Manual testing of the runout pin. In normal operation SENSOR_SWITCH is automatically passed through.
       </p>
 
       <div class="controls">
         <button class="btn btn-success" onclick="setRunoutOutput(true)">
-          ⬆️ HIGH setzen
+          ⬆️ Set HIGH
         </button>
         <button class="btn btn-danger" onclick="setRunoutOutput(false)">
-          ⬇️ LOW setzen
+          ⬇️ Set LOW
         </button>
       </div>
 
       <div style="margin-top: 10px;">
         <button class="btn btn-secondary" onclick="readRunoutState()" style="width: 100%;">
-          📖 Aktuellen Zustand lesen
+          📖 Read current state
         </button>
       </div>
 
       <div id="runoutTestResult" class="test-result">
-        Klicke einen Button um IO2 zu steuern
+        Click a button to control IO2
       </div>
     </div>
 
@@ -372,13 +372,13 @@ const char* getSettingsHTML() {
         document.getElementById('printerIP').value = data.printerIP || '';
         document.getElementById('printerPort').value = data.printerPort || 80;
 
-        showStatus('settingsStatus', '✅ Einstellungen geladen', 'success');
+        showStatus('settingsStatus', '✅ Settings loaded', 'success');
 
         // Load CallMeBot settings
         loadCallMeBotSettings();
       } catch (error) {
-        console.error('Fehler beim Laden:', error);
-        showStatus('settingsStatus', '❌ Fehler beim Laden', 'error');
+        console.error('Error loading:', error);
+        showStatus('settingsStatus', '❌ Error loading', 'error');
       }
     }
 
@@ -392,11 +392,11 @@ const char* getSettingsHTML() {
           document.getElementById('callmebotPhone').value = data.notify.phone || '';
           // Don't load API key for security (show placeholder if set)
           if (data.notify.hasApiKey) {
-            document.getElementById('callmebotApiKey').placeholder = '****** (gespeichert)';
+            document.getElementById('callmebotApiKey').placeholder = '****** (saved)';
           }
         }
       } catch (error) {
-        console.error('Fehler beim Laden der CallMeBot-Einstellungen:', error);
+        console.error('Error loading CallMeBot settings:', error);
       }
     }
 
@@ -423,13 +423,13 @@ const char* getSettingsHTML() {
           showStatus('callmebotStatus', '✅ ' + data.message, 'success');
           // Clear API key field after successful save
           document.getElementById('callmebotApiKey').value = '';
-          document.getElementById('callmebotApiKey').placeholder = '****** (gespeichert)';
+          document.getElementById('callmebotApiKey').placeholder = '****** (saved)';
         } else {
           showStatus('callmebotStatus', '❌ ' + data.message, 'error');
         }
       } catch (error) {
-        console.error('Fehler beim Speichern:', error);
-        showStatus('callmebotStatus', '❌ Fehler beim Speichern', 'error');
+        console.error('Error saving:', error);
+        showStatus('callmebotStatus', '❌ Error saving', 'error');
       }
     }
 
@@ -444,13 +444,13 @@ const char* getSettingsHTML() {
         const data = await response.json();
 
         if (data.success) {
-          showStatus('callmebotStatus', '✅ Test-Nachricht gesendet!', 'success');
+          showStatus('callmebotStatus', '✅ Test message sent!', 'success');
         } else {
           showStatus('callmebotStatus', '❌ ' + data.message, 'error');
         }
       } catch (error) {
-        console.error('Fehler:', error);
-        showStatus('callmebotStatus', '❌ Fehler beim Senden', 'error');
+        console.error('Error:', error);
+        showStatus('callmebotStatus', '❌ Error sending', 'error');
       }
     }
 
@@ -461,13 +461,13 @@ const char* getSettingsHTML() {
       const printerPort = parseInt(document.getElementById('printerPort').value) || 80;
 
       if (!printerIP) {
-        alert('Bitte mindestens eine Drucker-IP eingeben!');
+        alert('Please enter at least one printer IP!');
         return;
       }
 
       const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
       if (!ipPattern.test(printerIP)) {
-        alert('Ungültige IP-Adresse!');
+        alert('Invalid IP address!');
         return;
       }
 
@@ -494,21 +494,21 @@ const char* getSettingsHTML() {
           showStatus('settingsStatus', '✅ ' + result.message, 'success');
 
           if (result.needsRestart) {
-            if (confirm('Einstellungen gespeichert!\n\nFür WiFi-Änderungen ist ein Neustart erforderlich.\nJetzt neu starten?')) {
+            if (confirm('Settings saved!\n\nWiFi changes require a restart.\nRestart now?')) {
               await fetch('/api/control', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'restart' })
               });
-              alert('ESP32 wird neu gestartet...\nBitte warten Sie 10 Sekunden.');
+              alert('ESP32 is restarting...\nPlease wait 10 seconds.');
             }
           }
         } else {
           showStatus('settingsStatus', '❌ ' + result.message, 'error');
         }
       } catch (error) {
-        console.error('Fehler beim Speichern:', error);
-        showStatus('settingsStatus', '❌ Fehler beim Speichern', 'error');
+        console.error('Error saving:', error);
+        showStatus('settingsStatus', '❌ Error saving', 'error');
       }
     }
 
@@ -520,7 +520,7 @@ const char* getSettingsHTML() {
         document.getElementById('currentPartition').textContent = data.currentPartition;
         document.getElementById('nextPartition').textContent = data.nextPartition;
       } catch (error) {
-        console.error('OTA Status Fehler:', error);
+        console.error('OTA status error:', error);
       }
     }
 
@@ -531,11 +531,11 @@ const char* getSettingsHTML() {
       if (!file) return;
 
       if (!file.name.endsWith('.bin')) {
-        alert('Bitte nur .bin Dateien auswählen!');
+        alert('Please select only .bin files!');
         return;
       }
 
-      if (!confirm('Firmware "' + file.name + '" hochladen?\n\nDer ESP32 wird nach erfolgreichem Upload neu gestartet.')) {
+      if (!confirm('Upload firmware "' + file.name + '"?\n\nThe ESP32 will restart after a successful upload.')) {
         fileInput.value = '';
         return;
       }
@@ -550,7 +550,7 @@ const char* getSettingsHTML() {
       progressDiv.style.display = 'block';
       progressBar.style.width = '0%';
       progressBar.textContent = '0%';
-      statusDiv.textContent = 'Upload läuft...';
+      statusDiv.textContent = 'Uploading...';
 
       try {
         const xhr = new XMLHttpRequest();
@@ -568,25 +568,25 @@ const char* getSettingsHTML() {
             const response = JSON.parse(xhr.responseText);
             progressBar.style.width = '100%';
             progressBar.textContent = '100%';
-            statusDiv.textContent = response.message || 'Upload erfolgreich! Neustart...';
+            statusDiv.textContent = response.message || 'Upload successful! Restarting...';
             progressBar.style.background = '#4CAF50';
 
             setTimeout(() => {
-              alert('Firmware erfolgreich aktualisiert!\n\nDer ESP32 startet jetzt neu.\nBitte warten Sie ca. 10 Sekunden und laden Sie die Seite neu.');
+              alert('Firmware updated successfully!\n\nThe ESP32 is now restarting.\nPlease wait about 10 seconds and reload the page.');
             }, 1000);
           } else {
             const response = JSON.parse(xhr.responseText);
-            statusDiv.textContent = 'Fehler: ' + (response.message || 'Upload fehlgeschlagen');
+            statusDiv.textContent = 'Error: ' + (response.message || 'Upload failed');
             progressBar.style.background = '#dc3545';
-            alert('Upload fehlgeschlagen: ' + (response.message || 'Unbekannter Fehler'));
+            alert('Upload failed: ' + (response.message || 'Unknown error'));
           }
           fileInput.value = '';
         });
 
         xhr.addEventListener('error', () => {
-          statusDiv.textContent = 'Upload fehlgeschlagen';
+          statusDiv.textContent = 'Upload failed';
           progressBar.style.background = '#dc3545';
-          alert('Upload fehlgeschlagen: Netzwerkfehler');
+          alert('Upload failed: Network error');
           fileInput.value = '';
         });
 
@@ -594,10 +594,10 @@ const char* getSettingsHTML() {
         xhr.send(formData);
 
       } catch (error) {
-        console.error('Upload Fehler:', error);
-        statusDiv.textContent = 'Fehler: ' + error.message;
+        console.error('Upload error:', error);
+        statusDiv.textContent = 'Error: ' + error.message;
         progressBar.style.background = '#dc3545';
-        alert('Upload fehlgeschlagen: ' + error.message);
+        alert('Upload failed: ' + error.message);
         fileInput.value = '';
       }
     }
@@ -605,24 +605,24 @@ const char* getSettingsHTML() {
     async function setRunoutOutput(state) {
       try {
         const resultDiv = document.getElementById('runoutTestResult');
-        resultDiv.textContent = state ? 'Setze IO2 auf HIGH...' : 'Setze IO2 auf LOW...';
+        resultDiv.textContent = state ? 'Setting IO2 to HIGH...' : 'Setting IO2 to LOW...';
         resultDiv.style.color = '#ffc107';
 
         const response = await fetch('/api/test/runout/set?state=' + (state ? '1' : '0'));
         const data = await response.json();
 
         if (data.success) {
-          resultDiv.textContent = state ? '✅ IO2 = HIGH gesetzt' : '✅ IO2 = LOW gesetzt';
+          resultDiv.textContent = state ? '✅ IO2 = HIGH set' : '✅ IO2 = LOW set';
           resultDiv.style.color = state ? '#4CAF50' : '#dc3545';
           resultDiv.style.fontSize = '1.2em';
         } else {
-          resultDiv.textContent = 'Fehler: ' + data.message;
+          resultDiv.textContent = 'Error: ' + data.message;
           resultDiv.style.color = '#dc3545';
         }
       } catch (error) {
-        console.error('Runout Set Fehler:', error);
+        console.error('Runout set error:', error);
         const resultDiv = document.getElementById('runoutTestResult');
-        resultDiv.textContent = 'Fehler: ' + error.message;
+        resultDiv.textContent = 'Error: ' + error.message;
         resultDiv.style.color = '#dc3545';
       }
     }
@@ -630,7 +630,7 @@ const char* getSettingsHTML() {
     async function readRunoutState() {
       try {
         const resultDiv = document.getElementById('runoutTestResult');
-        resultDiv.textContent = 'Lese Pin IO2...';
+        resultDiv.textContent = 'Reading pin IO2...';
         resultDiv.style.color = '#ffc107';
 
         const response = await fetch('/api/test/runout/read');
@@ -642,13 +642,13 @@ const char* getSettingsHTML() {
           resultDiv.style.color = isHigh ? '#4CAF50' : '#ffc107';
           resultDiv.style.fontSize = '1.2em';
         } else {
-          resultDiv.textContent = 'Fehler: ' + data.message;
+          resultDiv.textContent = 'Error: ' + data.message;
           resultDiv.style.color = '#dc3545';
         }
       } catch (error) {
-        console.error('Runout Read Fehler:', error);
+        console.error('Runout read error:', error);
         const resultDiv = document.getElementById('runoutTestResult');
-        resultDiv.textContent = 'Fehler: ' + error.message;
+        resultDiv.textContent = 'Error: ' + error.message;
         resultDiv.style.color = '#dc3545';
       }
     }

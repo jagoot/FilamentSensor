@@ -138,7 +138,7 @@ void setCallMeBotApiKey(const String& apiKey) {
 void notifyFilamentError(const char* errorType) {
   char message[200];
   snprintf(message, sizeof(message),
-           "🚨 Centauri Carbon Alarm!\n\n%s erkannt!\n\nDruck wurde pausiert.",
+           "🚨 Centauri Carbon Alarm!\n\n%s detected!\n\nPrint has been paused.",
            errorType);
   sendWhatsAppNotification(message);
 }
@@ -149,7 +149,7 @@ void notifyPrintComplete(const char* filename, unsigned long duration) {
   unsigned long minutes = (duration % 3600000) / 60000;
 
   snprintf(message, sizeof(message),
-           "✅ Druck abgeschlossen!\n\nDatei: %s\nDauer: %luh %lumin",
+           "✅ Print completed!\n\nFile: %s\nDuration: %luh %lumin",
            filename, hours, minutes);
   sendWhatsAppNotification(message);
 }
@@ -157,7 +157,7 @@ void notifyPrintComplete(const char* filename, unsigned long duration) {
 void notifyPrintStarted(const char* filename) {
   char message[200];
   snprintf(message, sizeof(message),
-           "🖨️ Druck gestartet\n\nDatei: %s",
+           "🖨️ Print started\n\nFile: %s",
            filename);
   sendWhatsAppNotification(message);
 }

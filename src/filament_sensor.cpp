@@ -14,18 +14,22 @@
 static Preferences preferences;
 
 // Filament Sensor Variables
+// Note: lastMotionPulse is accessed from ISR - use portENTER_CRITICAL for safe reads
 static volatile unsigned long lastMotionPulse = 0;
 static std::atomic<unsigned int> motionPulseCount(0);
 static unsigned long lastFilamentCheck = 0;
 static unsigned long lastPositionCheck = 0;
 static String lastPosition = "";
-static bool filamentErrorDetected = false;
+static volatile bool filamentErrorDetected = false;
 static bool autoPauseEnabled = true;
 static bool switchDirectMode = true;  // true = direct to RUNOUT_PIN, false = send pause command
 static unsigned long motionTimeout = MOTION_TIMEOUT;  // Default from config.h, but changeable
-static bool motionDetectedThisPrint = false;  // Track if we've seen motion during current print
+static volatile bool motionDetectedThisPrint = false;  // Track if we've seen motion during current print
 static unsigned long layer1StartTime = 0;  // Timestamp when layer 1 started
 static const unsigned long LAYER1_GRACE_PERIOD = 10000;  // 10s grace period after layer 1 starts
+
+// Spinlock for ISR-safe access to lastMotionPulse
+static portMUX_TYPE motionMux = portMUX_INITIALIZER_UNLOCKED;
 
 // Load settings from persistent storage
 void loadSensorSettings() {
@@ -66,6 +70,7 @@ void setupFilamentSensor() {
   loadSensorSettings();
 
   // Initialize motion timer to current time (prevent false jam on first print)
+  // No critical section needed here - ISR not attached yet
   lastMotionPulse = millis();
 
   pinMode(SENSOR_SWITCH, INPUT_PULLDOWN);
@@ -83,8 +88,10 @@ void setupFilamentSensor() {
 }
 
 void IRAM_ATTR filamentMotionISR() {
+  portENTER_CRITICAL_ISR(&motionMux);
   lastMotionPulse = millis();
-  motionPulseCount++;
+  portEXIT_CRITICAL_ISR(&motionMux);
+  motionPulseCount.fetch_add(1, std::memory_order_relaxed);
 }
 
 void checkFilamentSensor() {
@@ -120,7 +127,11 @@ void checkFilamentSensor() {
   // CRITICAL: Do not check for filament errors until Layer 1 is reached
   // This prevents false errors during warmup/homing/priming
   if (printerStatus.currentLayer < 1) {
-    Serial.println("[SENSOR] Warmup/Layer 0 - filament check disabled");
+    static unsigned long lastWarmupLog = 0;
+    if (now - lastWarmupLog > 5000) {  // Log only every 5 seconds to reduce spam
+      Serial.println("[SENSOR] Warmup/Layer 0 - filament check disabled");
+      lastWarmupLog = now;
+    }
     filamentErrorDetected = false;
     layer1StartTime = 0;  // Reset timer
     return;
@@ -135,8 +146,12 @@ void checkFilamentSensor() {
 
   // Skip jam detection during grace period
   if (layer1StartTime > 0 && (now - layer1StartTime) < LAYER1_GRACE_PERIOD) {
-    Serial.printf("[SENSOR] Grace period: %lu ms remaining\n", 
-                  LAYER1_GRACE_PERIOD - (now - layer1StartTime));
+    static unsigned long lastGraceLog = 0;
+    if (now - lastGraceLog > 2000) {  // Log only every 2 seconds to reduce spam
+      Serial.printf("[SENSOR] Grace period: %lu ms remaining\n", 
+                    LAYER1_GRACE_PERIOD - (now - layer1StartTime));
+      lastGraceLog = now;
+    }
     return;  // Skip all motion checks
   }
 
@@ -167,12 +182,18 @@ void checkFilamentSensor() {
   }
   lastFilamentCheck = now;
 
+  // Read lastMotionPulse safely (ISR-safe)
+  unsigned long lastPulseSnapshot;
+  portENTER_CRITICAL(&motionMux);
+  lastPulseSnapshot = lastMotionPulse;
+  portEXIT_CRITICAL(&motionMux);
+  
   // Check if motion pulses received (regardless of printhead movement)
-  unsigned long timeSinceLastPulse = now - lastMotionPulse;
+  unsigned long timeSinceLastPulse = now - lastPulseSnapshot;
 
-  if (motionPulseCount > 0) {
+  if (motionPulseCount.load() > 0) {
     // Motion pulses received - reset counter
-    motionPulseCount = 0;
+    motionPulseCount.store(0);
     motionDetectedThisPrint = true;  // Mark that we've seen motion during this print
 
     if (filamentErrorDetected) {
@@ -267,27 +288,39 @@ bool isFilamentErrorDetected() {
 }
 
 void displayFilamentSensorStatus() {
+  unsigned long lastPulseSnapshot;
+  portENTER_CRITICAL(&motionMux);
+  lastPulseSnapshot = lastMotionPulse;
+  portEXIT_CRITICAL(&motionMux);
+  
   Serial.println("\n--- Filament Sensor ---");
   Serial.printf("Filament Present: %s\n",
                 digitalRead(SENSOR_SWITCH) == HIGH ? "YES" : "NO");
-  Serial.printf("Last Motion: %lu ms ago\n", millis() - lastMotionPulse);
+  Serial.printf("Last Motion: %lu ms ago\n", millis() - lastPulseSnapshot);
   Serial.printf("Motion Pulses: %u\n", motionPulseCount.load());
   Serial.printf("Error Detected: %s\n", filamentErrorDetected ? "YES" : "NO");
   Serial.printf("Auto-Pause: %s\n", autoPauseEnabled ? "Enabled" : "Disabled");
 }
 
 void resetFilamentSensor() {
-  filamentErrorDetected = false;
-  motionPulseCount = 0;
+  portENTER_CRITICAL(&motionMux);
   lastMotionPulse = millis();  // Reset motion timer to current time
+  portEXIT_CRITICAL(&motionMux);
+  
+  filamentErrorDetected = false;
+  motionPulseCount.store(0);
   lastPosition = "";
   motionDetectedThisPrint = false;  // Reset motion tracking
-  layer1StartTime = 0;  // **FIX 4: Reset grace period timer**
+  layer1StartTime = 0;  // Reset grace period timer
   Serial.println("[SENSOR] Sensor state reset (motion timer reset)");
 }
 
 unsigned long getLastMotionPulse() {
-  return lastMotionPulse;
+  unsigned long result;
+  portENTER_CRITICAL(&motionMux);
+  result = lastMotionPulse;
+  portEXIT_CRITICAL(&motionMux);
+  return result;
 }
 
 unsigned int getMotionPulseCount() {

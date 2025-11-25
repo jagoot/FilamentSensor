@@ -15,8 +15,8 @@ void setupFilamentSensor();
 // Check filament sensor status
 void checkFilamentSensor();
 
-// Interrupt service routine for filament motion
-void filamentMotionISR();
+// Interrupt service routine for filament motion (must be in IRAM)
+void IRAM_ATTR filamentMotionISR();
 
 // Check if print head is moving
 bool isPrintHeadMoving();

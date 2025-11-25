@@ -24,6 +24,8 @@ static bool autoPauseEnabled = true;
 static bool switchDirectMode = true;  // true = direct to RUNOUT_PIN, false = send pause command
 static unsigned long motionTimeout = MOTION_TIMEOUT;  // Default from config.h, but changeable
 static bool motionDetectedThisPrint = false;  // Track if we've seen motion during current print
+static unsigned long layer1StartTime = 0;  // Timestamp when layer 1 started
+static const unsigned long LAYER1_GRACE_PERIOD = 10000;  // 10s grace period after layer 1 starts
 
 // Load settings from persistent storage
 void loadSensorSettings() {
@@ -120,7 +122,22 @@ void checkFilamentSensor() {
   if (printerStatus.currentLayer < 1) {
     Serial.println("[SENSOR] Warmup/Layer 0 - filament check disabled");
     filamentErrorDetected = false;
+    layer1StartTime = 0;  // Reset timer
     return;
+  }
+
+  // **FIX 1: Grace period after reaching layer 1**
+  if (printerStatus.currentLayer == 1 && layer1StartTime == 0) {
+    layer1StartTime = now;
+    lastMotionPulse = now;  // Reset motion timer when layer 1 starts
+    Serial.println("[SENSOR] Layer 1 started - 10s grace period active");
+  }
+
+  // Skip jam detection during grace period
+  if (layer1StartTime > 0 && (now - layer1StartTime) < LAYER1_GRACE_PERIOD) {
+    Serial.printf("[SENSOR] Grace period: %lu ms remaining\n", 
+                  LAYER1_GRACE_PERIOD - (now - layer1StartTime));
+    return;  // Skip all motion checks
   }
 
   // PRIORITY 1: Check if filament switch detects no filament (IMMEDIATE)
@@ -171,14 +188,22 @@ void checkFilamentSensor() {
   bool headMoving = isPrintHeadMoving();
 
   if (headMoving && !onLastLayer) {
-    // Printhead is moving and not on last layer, filament should be moving too
-    // Only check for jam if we've already seen motion during this print (prevents false positives at start)
-    if (motionDetectedThisPrint && timeSinceLastPulse > motionTimeout && !filamentErrorDetected) {
+    // **FIX 2: Zmień warunek - usuń wymaganie motionDetectedThisPrint dla pierwszych warstw**
+    bool allowJamCheck = motionDetectedThisPrint || (printerStatus.currentLayer <= 3);
+    
+    // **FIX 3: Zwiększ timeout dla pierwszych 3 warstw**
+    unsigned long effectiveTimeout = (printerStatus.currentLayer <= 3) 
+                                      ? motionTimeout * 2 
+                                      : motionTimeout;
+
+    if (allowJamCheck && timeSinceLastPulse > effectiveTimeout && !filamentErrorDetected) {
       Serial.println("\n[SENSOR] ⚠️  FILAMENT JAM DETECTED!");
-      Serial.printf("[SENSOR] No motion for %lu ms while printing\n", timeSinceLastPulse);
+      Serial.printf("[SENSOR] No motion for %lu ms while printing (timeout: %lu ms)\n", 
+                    timeSinceLastPulse, effectiveTimeout);
       Serial.printf("[SENSOR] Position: %s\n", printerStatus.currentCoord.c_str());
       Serial.printf("[SENSOR] Layer: %d/%d\n", printerStatus.currentLayer, printerStatus.totalLayers);
       Serial.printf("[SENSOR] Motion pulses: %u\n", motionPulseCount.load());
+      Serial.printf("[SENSOR] Motion detected this print: %s\n", motionDetectedThisPrint ? "YES" : "NO");
 
       filamentErrorDetected = true;
 
@@ -257,6 +282,7 @@ void resetFilamentSensor() {
   lastMotionPulse = millis();  // Reset motion timer to current time
   lastPosition = "";
   motionDetectedThisPrint = false;  // Reset motion tracking
+  layer1StartTime = 0;  // **FIX 4: Reset grace period timer**
   Serial.println("[SENSOR] Sensor state reset (motion timer reset)");
 }
 

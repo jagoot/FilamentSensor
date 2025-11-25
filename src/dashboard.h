@@ -511,22 +511,18 @@ const char* getDashboardHTML() {
         <button onclick="savePauseDelay()">💾 Save delay</button>
       </div>
 
-      <!-- WhatsApp Notifications -->
+      <!-- Discord Notifications -->
       <div class="settings-section">
-        <h3>📱 WhatsApp Notifications (CallMeBot)</h3>
+        <h3>🎮 Discord Notifications</h3>
         <label>
           <input type="checkbox" id="notifyEnabled" onchange="toggleNotifications()">
           Enable notifications
         </label>
         <label>
-          <span class="label">Phone number (with country code, e.g. 491701234567)</span>
-          <input type="text" id="notifyPhone" placeholder="491701234567">
+          <span class="label">Discord Webhook URL</span>
+          <input type="text" id="notifyWebhook" placeholder="https://discord.com/api/webhooks/...">
         </label>
-        <label>
-          <span class="label">CallMeBot API Key</span>
-          <input type="text" id="notifyApiKey" placeholder="API Key">
-        </label>
-        <button onclick="saveCallMeBotSettings()">💾 Save</button>
+        <button onclick="saveDiscordSettings()">💾 Save</button>
         <button onclick="testNotification()" class="success">📤 Send test message</button>
         <div id="notifyMessage" class="alert hidden"></div>
       </div>
@@ -645,7 +641,7 @@ const char* getDashboardHTML() {
         document.getElementById('switchModeToggle').checked = data.sensor.switchDirectMode;
         document.getElementById('pauseDelay').value = data.sensor.pauseDelay;
         document.getElementById('notifyEnabled').checked = data.notify.enabled;
-        document.getElementById('notifyPhone').value = data.notify.phone;
+        document.getElementById('notifyWebhook').value = data.notify.hasWebhook ? '(saved)' : '';
         document.getElementById('wifiSSIDInput').value = data.wifiSSID || '';
         document.getElementById('wifiPasswordInput').value = '';  // Password remains empty for security reasons
         document.getElementById('printerIPInput').value = data.printerIP || '';
@@ -708,19 +704,17 @@ const char* getDashboardHTML() {
 
     function toggleNotifications() {
       const enabled = document.getElementById('notifyEnabled').checked;
-      sendCommand('setCallMeBotSettings', {
+      sendCommand('setDiscordSettings', {
         enabled,
-        phone: document.getElementById('notifyPhone').value,
-        apiKey: document.getElementById('notifyApiKey').value
+        webhookUrl: document.getElementById('notifyWebhook').value
       });
     }
 
-    function saveCallMeBotSettings() {
+    function saveDiscordSettings() {
       const msg = document.getElementById('notifyMessage');
-      sendCommand('setCallMeBotSettings', {
+      sendCommand('setDiscordSettings', {
         enabled: document.getElementById('notifyEnabled').checked,
-        phone: document.getElementById('notifyPhone').value,
-        apiKey: document.getElementById('notifyApiKey').value
+        webhookUrl: document.getElementById('notifyWebhook').value
       });
       msg.className = 'alert alert-success';
       msg.textContent = '✓ Settings saved';

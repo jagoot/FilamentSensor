@@ -5,7 +5,7 @@
 #include "printer_status.h"
 #include "printer_status_codes.h"
 #include "filament_sensor.h"
-#include "callmebot.h"
+#include "discord.h"
 #include "config.h"
 
 // Global printer status instance
@@ -120,7 +120,7 @@ void checkStatusNotifications() {
       Serial.printf("Transition: %d (%s) -> %d (%s)\n",
                     lastPrintStatus, getStatusText(lastPrintStatus),
                     printerStatus.printStatus, getStatusText(printerStatus.printStatus));
-      Serial.println("Sending WhatsApp notification...");
+      Serial.println("Sending Discord notification...");
       Serial.println("========================================\n");
 
       // Use saved filename instead of current (which might be empty)

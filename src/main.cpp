@@ -15,7 +15,7 @@
 #include "printer_control.h"
 #include "filament_sensor.h"
 #include "ota_update.h"
-#include "callmebot.h"
+#include "discord.h"
 
 // Timing variables
 unsigned long lastStatusRequest = 0;
@@ -40,8 +40,8 @@ void setup() {
   // Initialize filament sensor
   setupFilamentSensor();
 
-  // Initialize CallMeBot notifications
-  setupCallMeBot();
+  // Initialize Discord notifications
+  setupDiscord();
 
   // Check if system is configured
   if (!isConfigured()) {

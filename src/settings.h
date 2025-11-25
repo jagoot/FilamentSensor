@@ -259,33 +259,27 @@ const char* getSettingsHTML() {
       <div id="settingsStatus" class="status-message" style="display:none;"></div>
     </div>
 
-    <!-- CallMeBot WhatsApp Notifications -->
+    <!-- Discord Notifications -->
     <div class="settings-section">
-      <h2>📱 WhatsApp Notifications (CallMeBot)</h2>
+      <h2>🎮 Discord Notifications</h2>
 
       <div class="form-group">
         <label>
-          <input type="checkbox" id="callmebotEnabled" style="width: auto;">
+          <input type="checkbox" id="discordEnabled" style="width: auto;">
           Enable notifications
         </label>
       </div>
 
       <div class="form-group">
-        <label>Phone number (with country code, e.g. 4915775323176):</label>
-        <input type="text" id="callmebotPhone" placeholder="4915775323176">
-      </div>
-
-      <div class="form-group">
-        <label>API Key:</label>
-        <input type="text" id="callmebotApiKey" placeholder="3751779">
+        <label>Discord Webhook URL:</label>
+        <input type="text" id="discordWebhook" placeholder="https://discord.com/api/webhooks/...">
         <small style="color: #888;">
-          Get API Key: Send "I allow callmebot to send me messages" to
-          <a href="https://wa.me/34644409248" target="_blank" style="color: #4CAF50;">+34 644 40 92 48</a>
+          Create webhook: Server Settings → Integrations → Webhooks → New Webhook
         </small>
       </div>
 
       <div class="controls">
-        <button class="btn btn-success" onclick="saveCallMeBotSettings()">
+        <button class="btn btn-success" onclick="saveDiscordSettings()">
           💾 Save
         </button>
         <button class="btn btn-secondary" onclick="testNotification()">
@@ -293,7 +287,7 @@ const char* getSettingsHTML() {
         </button>
       </div>
 
-      <div id="callmebotStatus" class="status-message" style="display:none;"></div>
+      <div id="discordStatus" class="status-message" style="display:none;"></div>
     </div>
 
     <!-- OTA Update Section -->
@@ -374,62 +368,59 @@ const char* getSettingsHTML() {
 
         showStatus('settingsStatus', '✅ Settings loaded', 'success');
 
-        // Load CallMeBot settings
-        loadCallMeBotSettings();
+        // Load Discord settings
+        loadDiscordSettings();
       } catch (error) {
         console.error('Error loading:', error);
         showStatus('settingsStatus', '❌ Error loading', 'error');
       }
     }
 
-    async function loadCallMeBotSettings() {
+    async function loadDiscordSettings() {
       try {
         const response = await fetch('/api/status');
         const data = await response.json();
 
         if (data.notify) {
-          document.getElementById('callmebotEnabled').checked = data.notify.enabled || false;
-          document.getElementById('callmebotPhone').value = data.notify.phone || '';
-          // Don't load API key for security (show placeholder if set)
-          if (data.notify.hasApiKey) {
-            document.getElementById('callmebotApiKey').placeholder = '****** (saved)';
+          document.getElementById('discordEnabled').checked = data.notify.enabled || false;
+          // Don't load webhook URL for security (show placeholder if set)
+          if (data.notify.hasWebhook) {
+            document.getElementById('discordWebhook').placeholder = '****** (saved)';
           }
         }
       } catch (error) {
-        console.error('Error loading CallMeBot settings:', error);
+        console.error('Error loading Discord settings:', error);
       }
     }
 
-    async function saveCallMeBotSettings() {
-      const enabled = document.getElementById('callmebotEnabled').checked;
-      const phone = document.getElementById('callmebotPhone').value;
-      const apiKey = document.getElementById('callmebotApiKey').value;
+    async function saveDiscordSettings() {
+      const enabled = document.getElementById('discordEnabled').checked;
+      const webhookUrl = document.getElementById('discordWebhook').value;
 
       try {
         const response = await fetch('/api/control', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: 'setCallMeBotSettings',
+            action: 'setDiscordSettings',
             enabled: enabled,
-            phone: phone,
-            apiKey: apiKey
+            webhookUrl: webhookUrl
           })
         });
 
         const data = await response.json();
 
         if (data.success) {
-          showStatus('callmebotStatus', '✅ ' + data.message, 'success');
-          // Clear API key field after successful save
-          document.getElementById('callmebotApiKey').value = '';
-          document.getElementById('callmebotApiKey').placeholder = '****** (saved)';
+          showStatus('discordStatus', '✅ ' + data.message, 'success');
+          // Clear webhook field after successful save
+          document.getElementById('discordWebhook').value = '';
+          document.getElementById('discordWebhook').placeholder = '****** (saved)';
         } else {
-          showStatus('callmebotStatus', '❌ ' + data.message, 'error');
+          showStatus('discordStatus', '❌ ' + data.message, 'error');
         }
       } catch (error) {
         console.error('Error saving:', error);
-        showStatus('callmebotStatus', '❌ Error saving', 'error');
+        showStatus('discordStatus', '❌ Error saving', 'error');
       }
     }
 
@@ -444,13 +435,13 @@ const char* getSettingsHTML() {
         const data = await response.json();
 
         if (data.success) {
-          showStatus('callmebotStatus', '✅ Test message sent!', 'success');
+          showStatus('discordStatus', '✅ Test message sent!', 'success');
         } else {
-          showStatus('callmebotStatus', '❌ ' + data.message, 'error');
+          showStatus('discordStatus', '❌ ' + data.message, 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        showStatus('callmebotStatus', '❌ Error sending', 'error');
+        showStatus('discordStatus', '❌ Error sending', 'error');
       }
     }
 

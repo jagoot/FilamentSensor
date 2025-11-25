@@ -7,7 +7,7 @@
 #include "printer_status.h"
 #include "printer_status_codes.h"
 #include "printer_control.h"
-#include "callmebot.h"
+#include "discord.h"
 #include <Preferences.h>
 
 // Preferences namespace
@@ -160,7 +160,7 @@ void checkFilamentSensor() {
     Serial.println("\n[SENSOR] ⚠️  FILAMENT RUNOUT DETECTED!");
     filamentErrorDetected = true;
 
-    // Send WhatsApp notification
+    // Send Discord notification
     notifyFilamentError("Filament-Runout");
 
     // In Pause Mode: send pause command (Direct Mode handles via pin)
@@ -228,7 +228,7 @@ void checkFilamentSensor() {
 
       filamentErrorDetected = true;
 
-      // Send WhatsApp notification
+      // Send Discord notification
       notifyFilamentError("Filament-Stau");
 
       if (autoPauseEnabled) {

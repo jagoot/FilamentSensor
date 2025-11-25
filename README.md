@@ -96,7 +96,7 @@ Das Projekt ist in logische Module aufgeteilt:
 
 ### Benachrichtigungs-Modul
 
-- **[callmebot.h](src/callmebot.h)** / **[callmebot.cpp](src/callmebot.cpp)**
+- **[callmebot.h](src/discord.h)** / **[callmebot.cpp](src/discord.cpp)**
   - WhatsApp-Benachrichtigungen via CallMeBot API
   - Benachrichtigungen bei Filament-Runout und Filament-Jam
   - Benachrichtigung bei Druck abgeschlossen (mit Druckdauer)

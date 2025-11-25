@@ -13,7 +13,7 @@
 #include "printer_control.h"
 #include "filament_sensor.h"
 #include "ota_update.h"
-#include "callmebot.h"
+#include "discord.h"
 #include <ArduinoJson.h>
 
 // Web server instance
@@ -169,11 +169,10 @@ void setupWebServer() {
     bool filamentPresent = digitalRead(SENSOR_SWITCH) == HIGH;
     sensor["noFilament"] = !filamentPresent;
 
-    // CallMeBot notification settings
+    // Discord notification settings
     JsonObject notify = doc["notify"].to<JsonObject>();
-    notify["enabled"] = getCallMeBotEnabled();
-    notify["phone"] = getCallMeBotPhone();
-    notify["hasApiKey"] = getCallMeBotApiKey().length() > 0;
+    notify["enabled"] = getDiscordEnabled();
+    notify["hasWebhook"] = getDiscordWebhookUrl().length() > 0;
 
     // WiFi and Printer configuration
     SystemConfig& config = getConfig();
@@ -299,28 +298,23 @@ void setupWebServer() {
         setMotionTimeout(delay);
         response["message"] = "Pause delay updated to " + String(delay) + " ms";
       }
-      else if (action == "setCallMeBotSettings") {
+      else if (action == "setDiscordSettings") {
         bool enabled = doc["enabled"] | false;
-        String phone = doc["phone"] | "";
-        String apiKey = doc["apiKey"] | "";
+        String webhookUrl = doc["webhookUrl"] | "";
 
-        Serial.println("[WEB] setCallMeBotSettings received:");
+        Serial.println("[WEB] setDiscordSettings received:");
         Serial.printf("[WEB]   enabled: %s\n", enabled ? "true" : "false");
-        Serial.printf("[WEB]   phone: %s\n", phone.c_str());
-        Serial.printf("[WEB]   apiKey: %s\n", apiKey.length() > 0 ? "***" : "(empty)");
+        Serial.printf("[WEB]   webhookUrl: %s\n", webhookUrl.length() > 0 ? "***" : "(empty)");
 
-        setCallMeBotEnabled(enabled);
-        if (phone.length() > 0) {
-          setCallMeBotPhone(phone);
-        }
-        if (apiKey.length() > 0) {
-          setCallMeBotApiKey(apiKey);
+        setDiscordEnabled(enabled);
+        if (webhookUrl.length() > 0) {
+          setDiscordWebhookUrl(webhookUrl);
         }
 
-        response["message"] = "CallMeBot settings updated";
+        response["message"] = "Discord settings updated";
       }
       else if (action == "testNotification") {
-        sendWhatsAppNotification("Test Nachricht vom Centauri Carbon Monitor!");
+        sendDiscordNotification("Test message from Centauri Carbon Monitor!");
         response["message"] = "Test notification sent";
       }
       else if (action == "restart") {
